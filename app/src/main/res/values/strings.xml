@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">BonjourDemo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="Start">Start</string>
+    <string name="Stop">Stop</string>
+    <string name="Register">register</string>
+    <string name="Unregister">unregister</string>
+
+</resources>
