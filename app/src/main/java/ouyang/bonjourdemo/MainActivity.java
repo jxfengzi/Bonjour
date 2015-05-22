@@ -7,6 +7,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.util.Base64;
+
+import java.util.Map;
 
 import ouyang.bonjour.Bonjour;
 import ouyang.bonjour.BonjourFactory;
@@ -63,10 +66,29 @@ public class MainActivity extends Activity implements BonjourListener {
         Log.d(TAG, "onButtonStart");
 
         bonjour.startDiscovery("_airplay._tcp");
-        bonjour.startDiscovery("_raop._tcp");
+//        bonjour.startDiscovery("_raop._tcp");
 
 //        bonjour.startDiscovery("_airplay._tcp.local.");
 //        bonjour.startDiscovery("_raop._tcp.local.");
+
+
+//        String t1 = "hi=hello";
+//        String t2 = "ver=123";
+//        byte b1[] = t1.getBytes();
+//        byte b2[] = t2.getBytes();
+//
+//        byte test[] = new byte[1 + b1.length + 1 + b2.length];
+//
+//        test[0] = (byte)(b1.length);
+//        System.arraycopy(b1, 0, test, 1, b1.length);
+//
+//        test[1 + b1.length] = (byte)(b2.length);
+//        System.arraycopy(b2, 0, test, 1 + b1.length + 1, b2.length);
+//
+//        setTxtRecord(test.length, test);
+
+//        byte[] txtRecord = getTxtRecord();
+//        setTxtRecord(txtRecord.length, txtRecord);
     }
 
     public void onButtonStop(View button) {
@@ -106,16 +128,74 @@ public class MainActivity extends Activity implements BonjourListener {
     @Override
     public void onStopped() {
         Log.d(TAG, "onStopped");
-    }
+     }
 
     @Override
     public void onServiceFound(BonjourServiceInfo serviceInfo) {
         Log.d(TAG, String.format("onServiceFound: %s %s %s %d", serviceInfo.getName(), serviceInfo.getType(), serviceInfo.getIp(), serviceInfo.getPort()));
 
+        if (serviceInfo.getProperties() != null) {
+            for (Map.Entry<String, String> v : serviceInfo.getProperties().entrySet()) {
+                Log.e(TAG, String.format("%s=%s", v.getKey(), v.getValue()));
+            }
+        }
     }
 
     @Override
     public void onServiceLost(BonjourServiceInfo serviceInfo) {
         Log.d(TAG, String.format("onServiceLost: %s %s %s %d", serviceInfo.getName(), serviceInfo.getType(), serviceInfo.getIp(), serviceInfo.getPort()));
+    }
+
+    private byte[] getTxtRecord() {
+        String base64 = "GmRldmljZWlkPTI4OkNGOkRBOjI3OkU2OjUxF2ZlYXR1cmVzPTB4NEE3RkZGRjcsMHhFCmZsYWdzPTB4NDQQbW9kZWw9QXBwbGVUVjIsMUNwaz1hMWZiMDY0MjU3YTY2ZTQ3YjY1N2ViNTdjZmJlM2U4ZjE1MmQ5NjlkNTdlZmQ2YzE0NjI2MzEyNTliZWQxZWYxDnNyY3ZlcnM9MjAwLjU0BHZ2PTI=";
+        return Base64.decode(base64.getBytes(), Base64.DEFAULT);
+    }
+
+    public void setTxtRecord(int txtLen, byte[] txtRecord) {
+        do {
+            if (txtLen < 2) {
+                Log.w(TAG, "txtLen < 2");
+                break;
+            }
+
+            if (txtRecord == null) {
+                Log.w(TAG, "txtRecord is null");
+                break;
+            }
+
+            if (txtRecord.length != txtLen) {
+                Log.w(TAG, "txtRecord.length != txtLen");
+                break;
+            }
+
+            int i = 0;
+            while (i < txtLen) {
+                byte length = txtRecord[i];
+                if (length >= txtLen) {
+                    Log.w(TAG, String.format("invalid length: %d", length));
+                    break;
+                }
+
+                int start = i + 1;
+                byte buf[] = new byte[length];
+                try {
+                    System.arraycopy(txtRecord, start, buf, 0, length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    break;
+                }
+
+                String v = new String(buf);
+                String a[] = v.split("=");
+                if (a.length == 2) {
+                    String key = a[0];
+                    String value = a[1];
+//                mTxtRecord.put(key, value.getBytes());
+                    Log.i(TAG, String.format("%s=%s", key ,value));
+                }
+
+                i = start + length;
+            }
+        } while (false);
     }
 }
