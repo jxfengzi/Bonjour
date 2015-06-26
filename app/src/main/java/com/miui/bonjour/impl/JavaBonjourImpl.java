@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl;
+package com.miui.bonjour.impl;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -20,10 +20,10 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import ouyang.bonjour.Bonjour;
-import ouyang.bonjour.BonjourListener;
-import ouyang.bonjour.serviceinfo.BonjourServiceInfo;
-import ouyang.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
+import com.miui.bonjour.Bonjour;
+import com.miui.bonjour.BonjourListener;
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
+import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
 
 /**
  * Created by ouyang on 15-5-14.
@@ -70,7 +70,7 @@ public class JavaBonjourImpl implements Bonjour {
     @Override
     public void startDiscovery(String type) {
         Job job = new Job(JobType.SERVICE_DISCOVERY_START);
-        job.setServiceType(type + ".local.");
+        job.setServiceType(type + "local.");
 
         jobHandler.put(job);
     }
@@ -82,7 +82,7 @@ public class JavaBonjourImpl implements Bonjour {
 
     @Override
     public void registerService(BonjourServiceInfo serviceInfo) {
-        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + ".local.",
+        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + "local.",
                 serviceInfo.getName(),
                 serviceInfo.getPort(),
                 0,
@@ -97,7 +97,7 @@ public class JavaBonjourImpl implements Bonjour {
 
     @Override
     public void unregisterService(BonjourServiceInfo serviceInfo) {
-        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + ".local.",
+        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + "local.",
                 serviceInfo.getName(),
                 serviceInfo.getPort(),
                 0,
@@ -166,7 +166,7 @@ public class JavaBonjourImpl implements Bonjour {
     }
 
     private class JobHandler implements Runnable {
-        private static final int MAX_SERVICE_INFO = 32;
+        private static final int MAX_SERVICE_INFO = 255 * 3;
         private static final int STOP_TIMEOUT = 1000 * 5;
         private WifiManager.MulticastLock wifiLock = null;
         private JmDNS jmdns = null;
@@ -207,7 +207,11 @@ public class JavaBonjourImpl implements Bonjour {
         }
 
         public synchronized void put(Job job) {
-            jobQueue.add(job);
+            try {
+                jobQueue.add(job);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -429,9 +433,16 @@ public class JavaBonjourImpl implements Bonjour {
                     s = foundServices.get(event.getName());
                 }
 
-                if (listener != null) {
-                    listener.onServiceLost(s);
+                if (s == null) {
+                    Log.d(TAG, "service not exist");
+                    break;
                 }
+
+                if (listener == null) {
+                    break;
+                }
+
+                listener.onServiceLost(s);
             } while (false);
         }
 
@@ -477,9 +488,11 @@ public class JavaBonjourImpl implements Bonjour {
                     Log.d(TAG, String.format("foundServices is: %d", foundServices.size()));
                 }
 
-                if (listener != null) {
-                    listener.onServiceFound(s);
+                if (listener == null) {
+                    break;
                 }
+
+                listener.onServiceFound(s);
             } while (false);
         }
 

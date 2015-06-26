@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl.setter;
+package com.miui.bonjour.impl.setter;
 
 import android.net.nsd.NsdServiceInfo;
 

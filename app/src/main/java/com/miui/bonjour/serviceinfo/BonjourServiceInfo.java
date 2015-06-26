@@ -1,4 +1,4 @@
-package ouyang.bonjour.serviceinfo;
+package com.miui.bonjour.serviceinfo;
 
 import java.util.Map;
 

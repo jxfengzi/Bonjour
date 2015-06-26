@@ -1,6 +1,7 @@
-package ouyang.bonjour;
+package com.miui.bonjour;
 
-import ouyang.bonjour.serviceinfo.BonjourServiceInfo;
+
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
 
 /**
  * Created by ouyang on 15-5-11.

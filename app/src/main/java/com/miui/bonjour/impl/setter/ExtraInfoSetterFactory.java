@@ -1,10 +1,10 @@
-package ouyang.bonjour.impl.setter;
+package com.miui.bonjour.impl.setter;
 
 import android.os.Build;
 import android.util.Log;
 
-import ouyang.bonjour.impl.setter.impl.ExtraInfoSetterOnKitKat;
-import ouyang.bonjour.impl.setter.impl.ExtraInfoSetterOnL;
+import com.miui.bonjour.impl.setter.impl.ExtraInfoSetterOnKitKat;
+import com.miui.bonjour.impl.setter.impl.ExtraInfoSetterOnL;
 
 /**
  * Created by ouyang on 15-5-14.

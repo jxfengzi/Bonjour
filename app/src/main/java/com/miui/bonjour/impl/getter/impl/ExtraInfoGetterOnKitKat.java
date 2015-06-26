@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl.getter.impl;
+package com.miui.bonjour.impl.getter.impl;
 
 import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import ouyang.bonjour.impl.getter.ExtraInfoGetter;
+import com.miui.bonjour.impl.getter.ExtraInfoGetter;
 
 /**
  * Created by ouyang on 15-5-15.

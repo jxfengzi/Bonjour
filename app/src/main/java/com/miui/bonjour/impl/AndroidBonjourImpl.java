@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl;
+package com.miui.bonjour.impl;
 
 import android.content.Context;
 import android.net.nsd.NsdManager;
@@ -10,14 +10,14 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import ouyang.bonjour.Bonjour;
-import ouyang.bonjour.BonjourListener;
-import ouyang.bonjour.impl.getter.ExtraInfoGetter;
-import ouyang.bonjour.impl.getter.ExtraInfoGetterFactory;
-import ouyang.bonjour.impl.setter.ExtraInfoSetter;
-import ouyang.bonjour.impl.setter.ExtraInfoSetterFactory;
-import ouyang.bonjour.serviceinfo.BonjourServiceInfo;
-import ouyang.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
+import com.miui.bonjour.Bonjour;
+import com.miui.bonjour.BonjourListener;
+import com.miui.bonjour.impl.getter.ExtraInfoGetter;
+import com.miui.bonjour.impl.getter.ExtraInfoGetterFactory;
+import com.miui.bonjour.impl.setter.ExtraInfoSetter;
+import com.miui.bonjour.impl.setter.ExtraInfoSetterFactory;
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
+import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
 
 
 /**
@@ -154,7 +154,7 @@ public class AndroidBonjourImpl implements Bonjour {
     }
 
     private class JobHandler implements Runnable {
-        private static final int MAX_SERVICE_INFO = 32;
+        private static final int MAX_SERVICE_INFO = 255 * 3;
         private static final int RESOLVE_TIMEOUT = 1000 * 5;
         private static final int STOP_TIMEOUT = 1000 * 5;
         private Thread thread = null;
@@ -192,12 +192,20 @@ public class AndroidBonjourImpl implements Bonjour {
         }
 
         public synchronized void put(Job job) {
-            jobQueue.add(job);
+            try {
+                jobQueue.add(job);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void run() {
             Log.d(TAG, "JobHandler running ...");
+
+            if (listener != null) {
+                listener.onStarted();
+            }
 
             while (true) {
                 Job job = null;
@@ -246,9 +254,15 @@ public class AndroidBonjourImpl implements Bonjour {
             registrationHandlers.clear();
 
             Log.d(TAG, "JobHandler run over");
+
+            if (listener != null) {
+                listener.onStopped();
+            }
         }
 
         private void doStartDiscovery(String serviceType) {
+            Log.d(TAG, String.format("doStartDiscovery: %s", serviceType));
+
             do {
                 if (discoveryHandlers.containsKey(serviceType)) {
                     Log.d(TAG, String.format("%s already started", serviceType));
@@ -263,9 +277,15 @@ public class AndroidBonjourImpl implements Bonjour {
         }
 
         private void doStopDiscovery() {
+            Log.d(TAG, "doStopDiscovery");
+
             do {
                 for (DiscoverHandler handler : discoveryHandlers.values()) {
-                    nsdManager.stopServiceDiscovery(handler);
+                    try {
+                        nsdManager.stopServiceDiscovery(handler);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 discoveryHandlers.clear();
@@ -407,7 +427,7 @@ public class AndroidBonjourImpl implements Bonjour {
         @Override
         public void onServiceFound(NsdServiceInfo serviceInfo) {
             String name = serviceInfo.getServiceName().replace("\\032", " ");
-            Log.e(TAG, String.format("onServiceFound: %s", name));
+            Log.d(TAG, String.format("onServiceFound: %s", name));
 
             Job job = new Job(JobType.SERVICE_FOUND);
             job.setServiceInfo(serviceInfo);
@@ -418,7 +438,7 @@ public class AndroidBonjourImpl implements Bonjour {
         @Override
         public void onServiceLost(NsdServiceInfo serviceInfo) {
             String name = serviceInfo.getServiceName().replace("\\032", " ");
-            Log.e(TAG, String.format("onServiceLost: %s", name));
+            Log.d(TAG, String.format("onServiceLost: %s", name));
 
             Job job = new Job(JobType.SERVICE_LOST);
             job.setServiceInfo(serviceInfo);

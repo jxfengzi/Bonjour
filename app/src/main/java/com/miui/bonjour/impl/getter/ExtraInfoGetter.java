@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl.getter;
+package com.miui.bonjour.impl.getter;
 
 import android.net.nsd.NsdServiceInfo;
 

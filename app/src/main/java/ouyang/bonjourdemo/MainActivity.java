@@ -2,6 +2,7 @@ package ouyang.bonjourdemo;
 
 //import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,11 +12,11 @@ import android.util.Base64;
 
 import java.util.Map;
 
-import ouyang.bonjour.Bonjour;
-import ouyang.bonjour.BonjourFactory;
-import ouyang.bonjour.BonjourListener;
-import ouyang.bonjour.serviceinfo.BonjourServiceInfo;
-import ouyang.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
+import com.miui.bonjour.Bonjour;
+import com.miui.bonjour.BonjourFactory;
+import com.miui.bonjour.BonjourListener;
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
+import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
 
 
 public class MainActivity extends Activity implements BonjourListener {
@@ -29,9 +30,7 @@ public class MainActivity extends Activity implements BonjourListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bonjour = BonjourFactory.create(this);
-        bonjour.setListener(this);
-        bonjour.start();
+        new BonjourTask().execute();
     }
 
     @Override
@@ -60,6 +59,24 @@ public class MainActivity extends Activity implements BonjourListener {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class BonjourTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Log.d(TAG, "doInBackground");
+            bonjour = BonjourFactory.create(MainActivity.this);
+            bonjour.setListener(MainActivity.this);
+            bonjour.start();
+            return Boolean.TRUE;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            Log.d(TAG, "onPostExecute");
+            super.onPostExecute(aBoolean);
+        }
     }
 
     public void onButtonStart(View button) {

@@ -1,7 +1,7 @@
 
-package ouyang.bonjour.serviceinfo.impl;
+package com.miui.bonjour.serviceinfo.impl;
 
-import ouyang.bonjour.serviceinfo.BonjourServiceInfo;
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
 
 import java.util.HashMap;
 import java.util.Map;

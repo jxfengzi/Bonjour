@@ -1,4 +1,4 @@
-package ouyang.bonjour.impl.setter.impl;
+package com.miui.bonjour.impl.setter.impl;
 
 import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import ouyang.bonjour.impl.setter.ExtraInfoSetter;
+import com.miui.bonjour.impl.setter.ExtraInfoSetter;
 
 /**
  * Created by ouyang on 15-5-14.

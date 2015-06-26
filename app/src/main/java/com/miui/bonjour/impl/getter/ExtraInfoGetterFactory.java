@@ -1,10 +1,10 @@
-package ouyang.bonjour.impl.getter;
+package com.miui.bonjour.impl.getter;
 
 import android.os.Build;
 import android.util.Log;
 
-import ouyang.bonjour.impl.getter.impl.ExtraInfoGetterOnKitKat;
-import ouyang.bonjour.impl.getter.impl.ExtraInfoGetterOnL;
+import com.miui.bonjour.impl.getter.impl.ExtraInfoGetterOnKitKat;
+import com.miui.bonjour.impl.getter.impl.ExtraInfoGetterOnL;
 
 /**
  * Created by ouyang on 15-5-15.
