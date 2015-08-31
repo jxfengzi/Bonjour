@@ -70,13 +70,17 @@ public class JavaBonjourImpl implements Bonjour {
     @Override
     public void startDiscovery(String type) {
         Job job = new Job(JobType.SERVICE_DISCOVERY_START);
-        job.setServiceType(type + "local.");
+        job.setServiceType(type + ".local.");
+
+        Log.d(TAG, "startDiscovery: " + job.getServiceType());
 
         jobHandler.put(job);
     }
 
     @Override
     public void stopAllDiscovery() {
+        Log.d(TAG, "stopAllDiscovery");
+
         jobHandler.put(new Job(JobType.SERVICE_DISCOVERY_STOP));
     }
 
@@ -405,6 +409,7 @@ public class JavaBonjourImpl implements Bonjour {
                 }
 
                 for (Map.Entry<String, MyServiceListener> l : myListeners.entrySet()) {
+                    myListeners.remove(l.getKey());
                     jmdns.removeServiceListener(l.getKey(), l.getValue());
                 }
             } while (false);
@@ -485,7 +490,7 @@ public class JavaBonjourImpl implements Bonjour {
                 s.setType(type);
                 s.setIp(ip);
                 s.setPort(port);
-                s.getProperties();
+                s.setProperties(properties);
 
                 synchronized (foundServices) {
                     foundServices.put(name, s);
@@ -540,7 +545,7 @@ public class JavaBonjourImpl implements Bonjour {
 
                 ServiceInfo serviceInfo = regServices.get(serviceType);
                 jmdns.unregisterService(serviceInfo);
-                regServices.remove(serviceInfo);
+                regServices.remove(serviceType);
             } while (false);
         }
 
