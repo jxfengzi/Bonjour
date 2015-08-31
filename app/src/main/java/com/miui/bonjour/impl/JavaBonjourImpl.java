@@ -5,6 +5,11 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import com.miui.bonjour.Bonjour;
+import com.miui.bonjour.BonjourListener;
+import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
+import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -19,11 +24,6 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
-
-import com.miui.bonjour.Bonjour;
-import com.miui.bonjour.BonjourListener;
-import com.miui.bonjour.serviceinfo.BonjourServiceInfo;
-import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
 
 /**
  * Created by ouyang on 15-5-14.
@@ -82,12 +82,14 @@ public class JavaBonjourImpl implements Bonjour {
 
     @Override
     public void registerService(BonjourServiceInfo serviceInfo) {
-        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + "local.",
+        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + ".local.",
                 serviceInfo.getName(),
                 serviceInfo.getPort(),
                 0,
                 0,
                 serviceInfo.getProperties());
+
+        Log.e(TAG, "registerService: " + info.getType());
 
         Job job = new Job(JobType.SERVICE_REG);
         job.setServiceInfo(info);
@@ -97,12 +99,14 @@ public class JavaBonjourImpl implements Bonjour {
 
     @Override
     public void unregisterService(BonjourServiceInfo serviceInfo) {
-        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + "local.",
+        ServiceInfo info = ServiceInfo.create(serviceInfo.getType() + ".local.",
                 serviceInfo.getName(),
                 serviceInfo.getPort(),
                 0,
                 0,
                 serviceInfo.getProperties());
+
+        Log.e(TAG, "unregisterService: " + info.getType());
 
         Job job = new Job(JobType.SERVICE_UNREG);
         job.setServiceInfo(info);
