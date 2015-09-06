@@ -1,8 +1,10 @@
 package com.miui.bonjour.impl;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -78,12 +80,18 @@ public class AndroidBonjourImpl implements Bonjour {
 
     @Override
     public void registerService(BonjourServiceInfo serviceInfo) {
+        Log.d(TAG, "registerService: " + serviceInfo.getType());
+
         NsdServiceInfo info = new NsdServiceInfo();
         info.setServiceName(serviceInfo.getName());
         info.setServiceType(serviceInfo.getType());
         info.setPort(serviceInfo.getPort());
-        ExtraInfoSetter setter = ExtraInfoSetterFactory.create();
-        setter.set(info, serviceInfo.getProperties());
+
+        // bug! registerService error on NsdService if NsdServiceInfo has properties on KitKat!
+        if (Build.VERSION.SDK_INT >= 21) {
+            ExtraInfoSetter setter = ExtraInfoSetterFactory.create();
+            setter.set(info, serviceInfo.getProperties());
+        }
 
         Log.d(TAG, info.toString());
 
@@ -94,12 +102,18 @@ public class AndroidBonjourImpl implements Bonjour {
 
     @Override
     public void unregisterService(BonjourServiceInfo serviceInfo) {
+        Log.d(TAG, "unregisterService: " + serviceInfo.getType());
+
         NsdServiceInfo info = new NsdServiceInfo();
         info.setServiceName(serviceInfo.getName());
         info.setServiceType(serviceInfo.getType());
         info.setPort(serviceInfo.getPort());
-        ExtraInfoSetter setter = ExtraInfoSetterFactory.create();
-        setter.set(info, serviceInfo.getProperties());
+
+        // bug! registerService error on NsdService if NsdServiceInfo has properties on KitKat!
+        if (Build.VERSION.SDK_INT >= 21) {
+            ExtraInfoSetter setter = ExtraInfoSetterFactory.create();
+            setter.set(info, serviceInfo.getProperties());
+        }
 
         Log.d(TAG, info.toString());
 
@@ -370,9 +384,12 @@ public class AndroidBonjourImpl implements Bonjour {
         }
 
         private void doServiceReg(NsdServiceInfo info) {
+            Log.d(TAG, "doServiceReg");
+
             do {
                 String id = String.format("%s@%s", info.getServiceName(), info.getServiceType());
                 if (registrationHandlers.containsKey(id)) {
+                    Log.d(TAG, "service is registered!");
                     break;
                 }
 
@@ -384,10 +401,13 @@ public class AndroidBonjourImpl implements Bonjour {
         }
 
         private void doServiceUnreg(NsdServiceInfo info) {
+            Log.d(TAG, "doServiceUnreg");
+
             do {
                 String id = String.format("%s@%s", info.getServiceName(), info.getServiceType());
                 RegistrationHandler handler = registrationHandlers.get(id);
                 if (handler == null) {
+                    Log.d(TAG, "service is not registered!");
                     break;
                 }
 

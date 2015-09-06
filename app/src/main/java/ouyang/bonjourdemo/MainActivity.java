@@ -22,8 +22,10 @@ import com.miui.bonjour.serviceinfo.impl.BonjourServiceInfoImpl;
 public class MainActivity extends Activity implements BonjourListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    public static final String HTTP_SERVICE_TYPE = "_http._tcp";
     private Bonjour bonjour = null;
-    BonjourServiceInfoImpl serviceInfo = new BonjourServiceInfoImpl();
+    private BonjourServiceInfoImpl serviceInfo = new BonjourServiceInfoImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +84,9 @@ public class MainActivity extends Activity implements BonjourListener {
     public void onButtonStart(View button) {
         Log.d(TAG, "onButtonStart");
 
-        bonjour.startDiscovery("_airplay._tcp");
+        bonjour.startDiscovery(HTTP_SERVICE_TYPE);
+//        bonjour.startDiscovery("_airplay._tcp");
 //        bonjour.startDiscovery("_raop._tcp");
-
-//        bonjour.startDiscovery("_airplay._tcp.local.");
-//        bonjour.startDiscovery("_raop._tcp.local.");
 
 
 //        String t1 = "hi=hello";
@@ -118,8 +118,7 @@ public class MainActivity extends Activity implements BonjourListener {
         Log.d(TAG, "onButtonReg");
 
         serviceInfo.setName("OuyangHelloDevice");
-        serviceInfo.setType("_http._tcp");
-//        serviceInfo.setType("_http._tcp.local.");
+        serviceInfo.setType(HTTP_SERVICE_TYPE);
         serviceInfo.setPort(8080);
         serviceInfo.getProperties().put("ver", "123");
         serviceInfo.getProperties().put("hello", "hello, world");
